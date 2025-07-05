@@ -1,0 +1,39 @@
+# FastAPI and Server
+fastapi
+uvicorn
+python-multipart
+
+# Environment and Configuration
+python-dotenv
+
+# Database
+pymongo
+qdrant-client
+redis
+
+# PDF Processing
+PyPDF2
+
+# AI Models and ML
+torch
+transformers
+sentence-transformers
+scikit-learn
+numpy
+
+# Google Gemini
+google-generativeai
+
+# Text Processing
+regex
+nltk
+
+# Utilities
+pydantic
+requests
+tqdm
+
+# Optional: For development
+pytest
+black
+flake8 

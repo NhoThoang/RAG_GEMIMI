@@ -1,0 +1,5 @@
+| Mục đích                       | Model đề xuất                                                          |
+| ------------------------------ | ---------------------------------------------------------------------- |
+| Tóm tắt chất lượng cao         | `VietAI/vit5-large-vietnews-summarization`                             |
+| Cân bằng tài nguyên & hiệu quả | `trong269/vit5-vietnamese-text-summarization`                          |
+| Test nhanh, nhẹ                | `pengold/t5-vietnamese-summarization` hoặc `t5-small-vi-summarization` |

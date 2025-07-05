@@ -1,0 +1,102 @@
+rong đoạn code FastAPI của bạn, có 4 mô hình (models) đang được sử dụng từ các thư viện sentence-transformers, transformers, và google.generativeai. Cụ thể như sau:
+
+✅ 1. SentenceTransformer("intfloat/multilingual-e5-base")
+Thư viện: sentence-transformers
+
+Mục đích: Dùng để tạo vector embedding cho đoạn văn và câu hỏi.
+
+Thiết bị chạy: GPU hoặc CPU (qua device=device_str)
+
+Ứng dụng trong code:
+
+model.encode(chunk) để vector hóa đoạn chunk tóm tắt
+
+model.encode(question) để vector hóa câu hỏi của người dùng
+
+So sánh ngữ nghĩa bằng cosine similarity
+
+✅ 2. pipeline("summarization", model="facebook/bart-large-cnn")
+Thư viện: transformers
+
+Mục đích: Tóm tắt văn bản (text summarization)
+
+Thiết bị chạy: GPU nếu torch.cuda.is_available(), qua device=device
+
+Ứng dụng trong code:
+
+Trong summarize_text(), dùng để tạo tóm tắt cho mỗi đoạn chunk PDF
+
+✅ 3. pipeline("text2text-generation", model="google/flan-t5-base")
+Thư viện: transformers
+
+Mục đích: Sinh tiêu đề ngắn cho đoạn chunk
+
+Thiết bị chạy: GPU nếu có
+
+Ứng dụng trong code:
+
+Trong generate_title(), sinh tiêu đề cho mỗi chunk
+
+✅ 4. genai.GenerativeModel("gemini-pro") ← 🟥 SAI MODEL NAME
+Thư viện: google.generativeai
+
+Mục đích: Dùng Gemini API (Google) để sinh câu trả lời tổng hợp từ các chunk tìm được
+
+Model name đúng phải là:
+
+python
+Copy
+Edit
+genai.GenerativeModel("models/gemini-pro")
+Ứng dụng trong code:
+
+Trong generate_answer(), sinh ra câu trả lời tổng hợp từ top 5 chunk tìm được 
+
+
+| Tên model                       | Mục đích                  | Nguồn model           | Chạy trên | Ghi chú                                          |
+| ------------------------------- | ------------------------- | --------------------- | --------- | ------------------------------------------------ |
+| `intfloat/multilingual-e5-base` | Vector hóa ngữ nghĩa      | sentence-transformers | GPU/CPU   | Dùng cho search Qdrant và chunking               |
+| `facebook/bart-large-cnn`       | Tóm tắt văn bản           | transformers          | GPU/CPU   | Có thể thay bằng model nhẹ hơn                   |
+| `google/flan-t5-base`           | Sinh tiêu đề              | transformers          | GPU/CPU   | Text2Text Generation                             |
+| `models/gemini-pro`             | Sinh câu trả lời bằng API | Google Gemini API     | Cloud API | Cần sửa lại `"gemini-pro"` → `models/gemini-pro` |
+
+
+
+✅ Cách gọi API /ask (POST)
+📤 Request khi câu hỏi mới:
+json
+Copy
+Edit
+POST /ask
+{
+  "question": "Cuốn sách nói về điều gì?",
+  "type": "new"
+}
+📤 Request khi là hội thoại tiếp nối:
+json
+Copy
+Edit
+POST /ask
+{
+  "question": "Ông ấy sinh năm bao nhiêu?",
+  "type": "followup",
+  "history": [
+    {"question": "Nhân vật chính là ai?", "answer": "Ông ấy là Nguyễn Văn A."}
+  ]
+}
+
+
+{
+  "question": "Bill Gates từng phát biểu gì về giáo dục?",
+  "type": "followup",
+  "history": [
+    {
+      "question": "Bill Gates là ai?",
+      "answer": "Bill Gates là nhà sáng lập Microsoft, sinh năm 1955..."
+    },
+    {
+      "question": "Ông có vai trò gì trong ngành công nghệ?",
+      "answer": "Ông là người tiên phong đưa máy tính cá nhân đến mọi người..."
+    }
+  ]
+}
